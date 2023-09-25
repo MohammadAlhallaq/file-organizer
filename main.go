@@ -10,9 +10,10 @@ import (
 func main() {
 	currentUser, err := user.Current()
 	downloadsDir := filepath.Join(currentUser.HomeDir, "Downloads")
-
-	extensions := fileExt{}
-	files := files{}
+	files := files{
+		extensions: []string{},
+		references: []*os.FileInfo{},
+	}
 
 	dir, err := os.Open(downloadsDir)
 	if err != nil {
@@ -30,9 +31,5 @@ func main() {
 		return
 	}
 
-	for _, fileInfo := range fileInfos {
-		fmt.Println(fileInfo.Name())
-		extensions = append(extensions, filepath.Ext(fileInfo.Name()))
-		files = append(files, &fileInfo)
-	}
+	files.collectFiles(fileInfos)
 }
