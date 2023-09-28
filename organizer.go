@@ -14,8 +14,10 @@ type files struct {
 
 func (f *files) collectFiles(fileInfos []os.FileInfo) {
 	for _, fileInfo := range fileInfos {
-		f.extensions = append(f.extensions, filepath.Ext(fileInfo.Name()))
-		f.references = append(f.references, fileInfo)
+		if !fileInfo.IsDir() {
+			f.extensions = append(f.extensions, filepath.Ext(fileInfo.Name()))
+			f.references = append(f.references, fileInfo)
+		}
 	}
 }
 

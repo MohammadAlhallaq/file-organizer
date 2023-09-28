@@ -8,30 +8,36 @@ import (
 )
 
 func main() {
-	currentUser, err := user.Current()
-	downloadsDir := filepath.Join(currentUser.HomeDir, "Downloads/test")
 
-	files := files{
-		extensions: []string{},
-		references: []os.FileInfo{},
-	}
+	directories := getDirectories()
 
-	dir, err := os.Open(downloadsDir)
-	if err != nil {
-		return
-	}
-	defer func(dir *os.File) {
-		err := dir.Close()
-		if err != nil {
+	for _, directory := range directories {
+		files := files{
+			extensions: []string{},
+			references: []os.FileInfo{},
 		}
-	}(dir)
 
-	fileInfos, err := dir.Readdir(-1)
-	if err != nil {
-		fmt.Println("Error reading directory:", err)
-		return
+		dir, err := os.Open(directory)
+		if err != nil {
+			return
+		}
+
+		fileInfos, err := dir.Readdir(-1)
+		if err != nil {
+			fmt.Println("Error reading directory:", err)
+			return
+		}
+		err = dir.Close()
+
+		files.collectFiles(fileInfos)
+		files.organize(directory)
 	}
+}
 
-	files.collectFiles(fileInfos)
-	files.organize(downloadsDir)
+func getDirectories() []string {
+	currentUser, _ := user.Current()
+	downloadsDir := filepath.Join(currentUser.HomeDir, "Downloads")
+	desktopDir := filepath.Join(currentUser.HomeDir, "Desktop")
+
+	return []string{downloadsDir, desktopDir}
 }
