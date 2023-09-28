@@ -9,10 +9,11 @@ import (
 
 func main() {
 	currentUser, err := user.Current()
-	downloadsDir := filepath.Join(currentUser.HomeDir, "Downloads")
+	downloadsDir := filepath.Join(currentUser.HomeDir, "Downloads/test")
+
 	files := files{
 		extensions: []string{},
-		references: []*os.FileInfo{},
+		references: []os.FileInfo{},
 	}
 
 	dir, err := os.Open(downloadsDir)
@@ -32,4 +33,5 @@ func main() {
 	}
 
 	files.collectFiles(fileInfos)
+	files.organize(downloadsDir)
 }
